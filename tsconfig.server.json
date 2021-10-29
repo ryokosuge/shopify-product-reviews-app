@@ -3,6 +3,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "isolatedModules": false,
-    "outDir": "./dist"
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types",
+    ],
   },
 }

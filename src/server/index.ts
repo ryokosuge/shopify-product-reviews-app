@@ -2,17 +2,43 @@ import next from "next";
 import dotenv from "dotenv";
 import Koa, { ExtendableContext } from "koa";
 import KoaRouter from "koa-router";
-import KoaBodyParser from "koa-bodyparser";
+import createShopifyAuth, { verifyRequest } from "@shopify/koa-shopify-auth";
+import Shopify, { ApiVersion } from "@shopify/shopify-api";
 
 dotenv.config();
-const port =
-  process.env.PORT != null ? parseInt(process.env.PORT, 10) || 8081 : 8081;
+
+const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, SCOPES, HOST, PORT } = process.env;
+const port = parseInt(PORT, 10) || 8081;
+
+// Next.js
 const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({
   dev,
 });
-
 const nextAppHandle = nextApp.getRequestHandler();
+
+// Shopify
+Shopify.Context.initialize({
+  API_KEY: SHOPIFY_API_KEY,
+  API_SECRET_KEY: SHOPIFY_API_SECRET,
+  SCOPES: SCOPES.split(","),
+  HOST_NAME: HOST.replace(/https:\/\//, ""),
+  API_VERSION: ApiVersion.October21,
+  IS_EMBEDDED_APP: true,
+  SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
+});
+
+const ACTIVE_SHOPIFY_SHOPS: { [key: string]: string } = {};
+const verifyIfActiveShopifyShop = (context: Koa.Context, next: Koa.Next) => {
+  const shop = context.query.shop as string;
+  if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
+    context.redirect(`/auth?shop=${shop}`);
+    return;
+  }
+
+  return next();
+};
+
 const handleRequest = async (context: ExtendableContext) => {
   await nextAppHandle(context.req, context.res);
   context.respond = false;
@@ -23,7 +49,19 @@ const handleRequest = async (context: ExtendableContext) => {
   try {
     await nextApp.prepare();
     const server = new Koa();
-    server.keys = ["SECRET_KEY"];
+    server.keys = [Shopify.Context.API_SECRET_KEY];
+    server.use(
+      createShopifyAuth({
+        afterAuth: async (context) => {
+          const { shop, scope } = context.state.shopify;
+          const host = context.query.host as string;
+          ACTIVE_SHOPIFY_SHOPS[shop] = scope;
+          context.redirect(
+            `https://${shop}/admin/apps/${process.env.SHOPIFY_API_KEY}?shop=${shop}&host=${host}`,
+          );
+        },
+      }),
+    );
 
     const router = new KoaRouter();
     // Static content
@@ -31,7 +69,7 @@ const handleRequest = async (context: ExtendableContext) => {
     // Webpack content
     router.get("/_next/webpack-hmr", handleRequest);
     // Embedded app Next.js entry point
-    router.get("(.*)", handleRequest);
+    router.get("(.*)", verifyIfActiveShopifyShop, handleRequest);
 
     server.use(router.allowedMethods());
     server.use(router.routes());
