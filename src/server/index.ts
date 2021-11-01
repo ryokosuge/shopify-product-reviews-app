@@ -64,6 +64,27 @@ const handleRequest = async (context: ExtendableContext) => {
     );
 
     const router = new KoaRouter();
+
+    /**
+     * This REST endpoint is responsible rfor returning whether the store's current main theme supports app blocks.
+     */
+    router.get(
+      "/api/store/themes/main",
+      verifyRequest({ authRoute: "/auth" }),
+      async (context) => {
+        console.log(context);
+        const session = await Shopify.Utils.loadCurrentSession(
+          context.req,
+          context.res,
+        );
+        console.log(`session: ${session}`);
+        context.body = {
+          hoge: "fuga",
+        };
+        context.res.statusCode = 200;
+      },
+    );
+
     // Static content
     router.get("(/_next/static/.*)", handleRequest);
     // Webpack content
