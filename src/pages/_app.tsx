@@ -18,7 +18,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <PolarisAppProvider i18n={translations}>
       <AppBridgeProvider config={config}>
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
       </AppBridgeProvider>
     </PolarisAppProvider>
   );
