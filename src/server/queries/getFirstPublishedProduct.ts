@@ -21,6 +21,5 @@ export const getFirstPublishedProduct = async (
   const { body } = (await graphQLClient.query({
     data: GET_FIRST_PUBLISHED_PRODUCT_QUERY,
   })) as GraphQLResponseEdges<"products">;
-  console.log(JSON.stringify(body, null, 2));
   return body.data.products.edges[0].node;
 };

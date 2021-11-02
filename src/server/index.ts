@@ -103,8 +103,6 @@ const handleRequest = async (context: ExtendableContext) => {
           path: "themes",
         })) as RESTAPIResponse<"themes">;
 
-        console.log(JSON.stringify(themes, null, 2));
-
         // Find the published theme
         const publishedTheme = themes.find((theme) => theme.role === "main");
         if (publishedTheme == null) {
@@ -113,10 +111,6 @@ const handleRequest = async (context: ExtendableContext) => {
           return;
         }
 
-        console.log(
-          `publishedTheme:  ${JSON.stringify(publishedTheme, null, 2)}`,
-        );
-
         // Get list of assets contained within the published theme
         const {
           body: { assets },
@@ -124,18 +118,12 @@ const handleRequest = async (context: ExtendableContext) => {
           path: `themes/${publishedTheme.id}/assets`,
         })) as RESTAPIResponse<"assets">;
 
-        console.log(JSON.stringify(assets, null, 2));
-
         // Check if template JSON files exist for the template specified in APP_BLOCK_TEMPLATES
         const templateJSONFiles = assets.filter((asset) => {
           return APP_BLOCK_TEMPLATES.some(
             (template) => asset.key === `templates/${template}.json`,
           );
         });
-
-        console.log(
-          `templateJSONFiles: ${JSON.stringify(templateJSONFiles, null, 2)}`,
-        );
 
         // Get bodies of template JSONs.
         const templateJSONAssetContents = await Promise.all(
@@ -179,13 +167,11 @@ const handleRequest = async (context: ExtendableContext) => {
               const match = asset.value.match(
                 /\{\%\s+schema\s+\%\}([\s\S]*?)\{\%\s+endschema\s+\%\}/m,
               );
-              console.log(`match: ${match}`);
               if (match == null) {
                 return null;
               }
 
               const schema = JSON.parse(match[1]);
-              console.log(`schema:  ${JSON.stringify(schema, null, 2)}`);
               if (schema != null && schema.blocks) {
                 acceptsAppBlock = schema.blocks.some(
                   (block: any) => block.type === "@app",

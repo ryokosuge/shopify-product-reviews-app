@@ -14,8 +14,6 @@ export const containsAppBlock = (
     templateJSONAssetContent,
   );
 
-  console.log(JSON.stringify(parsedContent, null, 2));
-
   /**
    * Retrieves all blocks belonging to template sections.
    */
