@@ -13,7 +13,7 @@ const GettingStartedPage: NextPage = () => {
     };
   }, [app]);
   const { data } = useSWR("/api/store/themes/main", fetcher);
-  console.log(`data:  ${data}`);
+  console.log(`data:  ${JSON.stringify(data, null, 2)}`);
   return (
     <Page title="Getting Started">
       <Layout>

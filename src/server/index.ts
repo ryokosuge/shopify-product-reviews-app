@@ -4,6 +4,10 @@ import Koa, { ExtendableContext } from "koa";
 import KoaRouter from "koa-router";
 import createShopifyAuth, { verifyRequest } from "@shopify/koa-shopify-auth";
 import Shopify, { ApiVersion } from "@shopify/shopify-api";
+import { RESTAPIResponse } from "../types/rest_api";
+import { APP_BLOCK_TEMPLATES } from "./consts";
+import { getFirstPublishedProduct } from "./queries/getFirstPublishedProduct";
+import { containsAppBlock } from "../lib/contains-app-blocks";
 
 dotenv.config();
 
@@ -72,14 +76,161 @@ const handleRequest = async (context: ExtendableContext) => {
       "/api/store/themes/main",
       verifyRequest({ authRoute: "/auth" }),
       async (context) => {
-        console.log(context);
         const session = await Shopify.Utils.loadCurrentSession(
           context.req,
           context.res,
         );
-        console.log(`session: ${session}`);
+
+        if (session == null) {
+          context.res.statusCode = 401;
+          return;
+        }
+
+        console.info(JSON.stringify(session, null, 2));
+
+        const restClient = new Shopify.Clients.Rest(
+          session.shop,
+          session.accessToken,
+        );
+
+        // Check if App Blocks are supported
+        // --------------------------------------
+
+        // Use `restClient.get` to request list of theme on store.
+        const {
+          body: { themes },
+        } = (await restClient.get({
+          path: "themes",
+        })) as RESTAPIResponse<"themes">;
+
+        console.log(JSON.stringify(themes, null, 2));
+
+        // Find the published theme
+        const publishedTheme = themes.find((theme) => theme.role === "main");
+        if (publishedTheme == null) {
+          // not found
+          context.res.statusCode = 404;
+          return;
+        }
+
+        console.log(
+          `publishedTheme:  ${JSON.stringify(publishedTheme, null, 2)}`,
+        );
+
+        // Get list of assets contained within the published theme
+        const {
+          body: { assets },
+        } = (await restClient.get({
+          path: `themes/${publishedTheme.id}/assets`,
+        })) as RESTAPIResponse<"assets">;
+
+        console.log(JSON.stringify(assets, null, 2));
+
+        // Check if template JSON files exist for the template specified in APP_BLOCK_TEMPLATES
+        const templateJSONFiles = assets.filter((asset) => {
+          return APP_BLOCK_TEMPLATES.some(
+            (template) => asset.key === `templates/${template}.json`,
+          );
+        });
+
+        console.log(
+          `templateJSONFiles: ${JSON.stringify(templateJSONFiles, null, 2)}`,
+        );
+
+        // Get bodies of template JSONs.
+        const templateJSONAssetContents = await Promise.all(
+          templateJSONFiles.map(async (file) => {
+            const {
+              body: { asset },
+            } = (await restClient.get({
+              path: `themes/${publishedTheme.id}/assets`,
+              query: { "asset[key]": file.key },
+            })) as RESTAPIResponse<"asset">;
+            return asset;
+          }),
+        );
+
+        const templateMainSections = templateJSONAssetContents
+          .map((asset) => {
+            const json = JSON.parse(asset.value);
+            const main = json.sections.main && json.sections.main.type;
+            return assets.find(
+              (asset) => asset.key === `sections/${main}.liquid`,
+            );
+          })
+          .filter((value) => value !== null);
+
+        // Request the content of each section and check if it has a schema that contains a block of type '@app'
+        const sectionsWithAppBlock = (
+          await Promise.all(
+            templateMainSections.map(async (section, index) => {
+              if (section == null) {
+                return null;
+              }
+
+              let acceptsAppBlock = false;
+              const {
+                body: { asset },
+              } = (await restClient.get({
+                path: `themes/${publishedTheme.id}/assets`,
+                query: { "asset[key]": section.key },
+              })) as RESTAPIResponse<"asset">;
+
+              const match = asset.value.match(
+                /\{\%\s+schema\s+\%\}([\s\S]*?)\{\%\s+endschema\s+\%\}/m,
+              );
+              console.log(`match: ${match}`);
+              if (match == null) {
+                return null;
+              }
+
+              const schema = JSON.parse(match[1]);
+              console.log(`schema:  ${JSON.stringify(schema, null, 2)}`);
+              if (schema != null && schema.blocks) {
+                acceptsAppBlock = schema.blocks.some(
+                  (block: any) => block.type === "@app",
+                );
+              }
+
+              return acceptsAppBlock ? section : null;
+            }),
+          )
+        ).filter((value) => value !== null);
+
+        const grahpqlClient = new Shopify.Clients.Graphql(
+          session.shop,
+          session.accessToken,
+        );
+
+        /**
+         * Fetch one published product that's later used to build the editor preview url
+         */
+        const product = await getFirstPublishedProduct(grahpqlClient);
+        const editorUrl = `https://${session.shop}/admin/themes/${
+          publishedTheme.id
+        }/editor?previewPath=${encodeURIComponent(
+          `/products/${product.handle}`,
+        )}`;
+
+        const supportsSection = templateJSONFiles.length > 0;
+        const supportsAppBlocks =
+          supportsSection && sectionsWithAppBlock.length > 0;
+
         context.body = {
-          hoge: "fuga",
+          theme: publishedTheme,
+          supportsSection,
+          supportsAppBlocks,
+          containsAverageRatingAppBlock: containsAppBlock(
+            templateJSONAssetContents[0].value,
+            "average-rating",
+            process.env.THEME_APP_EXTENSION_UUID,
+          ),
+          containsProductReviewsAppBlock: containsAppBlock(
+            templateJSONAssetContents[0].value,
+            "product-reviews",
+            process.env.THEME_APP_EXTENSION_UUID,
+          ),
+          editorUrl,
         };
         context.res.statusCode = 200;
       },
