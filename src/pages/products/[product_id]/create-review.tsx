@@ -1,6 +1,6 @@
 import { Layout, Page } from "@shopify/polaris";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import React from "react";
 import { ReviewForm } from "../../../components/ReviewForm";
 import { useProductMetafieldCreate } from "../../../hooks/useProductMetafieldCreate";
@@ -10,14 +10,24 @@ import { generateShopifyProductGID } from "../../../utils/generateShopifyProduct
 
 const CreateReview: NextPage = () => {
   const { query, back } = useRouter();
-  const product_id = query.product_id as string;
+  const productId = query.product_id as string;
 
   const createProductMetafield = useProductMetafieldCreate();
 
   const handleSubmitReviewForm = async (data: ReviewFormType) => {
-    const gid = generateShopifyProductGID(product_id);
+    const gid = generateShopifyProductGID(productId);
     const metafield = generateReviewMetaFieldValue(data);
     await createProductMetafield({ productId: gid, metafield });
+    /**
+     * After the new review is created, redirect to the product review page
+     * with the "unpublished tab active (this is where to new review will show up)"
+     */
+    router.push({
+      pathname: `/products/${productId}`,
+      query: {
+        state: "unpublished",
+      },
+    });
     return;
   };
 

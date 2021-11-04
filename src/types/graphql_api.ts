@@ -1,3 +1,11 @@
+export type GraphQLResponse<P extends string, T extends {}> = {
+  body: {
+    data: {
+      [K in P]: T;
+    };
+  };
+};
+
 export type GraphQLResponseEdges<T extends keyof GraphQLEdgeEndpoints> = {
   body: {
     data: {
@@ -12,6 +20,20 @@ export type GraphQLResponseEdges<T extends keyof GraphQLEdgeEndpoints> = {
 
 type GraphQLEdgeEndpoints = {
   products: Product;
+};
+
+export type ProductWithReviewMetafields = {
+  id: string;
+  metafields: {
+    edges: {
+      node: {
+        id: string;
+        key: string;
+        value: string;
+        type: keyof MetaFieldType;
+      };
+    }[];
+  };
 };
 
 export type Product = {

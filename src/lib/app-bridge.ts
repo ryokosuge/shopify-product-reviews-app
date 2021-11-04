@@ -6,7 +6,6 @@ export const fetch = (app: ClientApplication<any>) => {
   const fetchFunction = authenticatedFetch(app);
   return async (request: RequestInfo, options?: RequestInit) => {
     const response = await fetchFunction(request, options);
-    console.log(response);
     if (
       response.headers.get("X-Shopify-API-Request-Failure-Reauthorize") === "1"
     ) {

@@ -1,0 +1,114 @@
+import { formatDate } from "@shopify/dates";
+import {
+  Caption,
+  EmptyState,
+  Heading,
+  ResourceList,
+  Tabs,
+  TextStyle,
+} from "@shopify/polaris";
+import React from "react";
+import { ProductReviewMetaField } from "../../hooks/useProductReviews";
+import { ReviewStateType } from "../../types/review";
+import { Rating } from "../Rating/Rating";
+import styles from "./ReviewList.module.css";
+
+const TAB_INDEX = {
+  published: 0,
+  unpublished: 1,
+} as const;
+
+const TABS = [
+  {
+    id: "published",
+    content: "Published",
+    accessibilityLabel: "Published Reviews",
+  },
+  {
+    id: "unpublished",
+    content: "Unpublished",
+    accessibilityLabel: "Unpublished Reviews",
+  },
+];
+
+type ReviewListItemProps = {
+  review: ProductReviewMetaField;
+};
+
+const ReviewListItem: React.FC<ReviewListItemProps> = ({ review }) => {
+  const formattedDate = formatDate(new Date(review.value.created_at), "en", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+  return (
+    <article>
+      <Heading element="h3">{review.value.reviewTitle}</Heading>
+      <div className={styles.Rating}>
+        <Rating rating={review.value.rating} />
+      </div>
+      <p>{review.value.reviewBody}</p>
+      <div className={styles.Caption}>
+        <Caption>
+          Reviewed on {formattedDate} by {review.value.name} -{" "}
+          {review.value.email}
+        </Caption>
+      </div>
+    </article>
+  );
+};
+
+type ReviewListProps = {
+  state: ReviewStateType;
+  reviews: ProductReviewMetaField[];
+  loading: boolean;
+};
+
+export const ReviewList: React.FC<ReviewListProps> = ({
+  state,
+  reviews,
+  loading,
+}) => {
+  const [selectedTabIndex, setSelectedTabIndex] = React.useState<number>(
+    TAB_INDEX[state],
+  );
+  const handleSelectedTab = React.useCallback((selectedTabIndex: number) => {
+    setSelectedTabIndex(selectedTabIndex);
+  }, []);
+  const sortedReviews = React.useMemo(() => {
+    return reviews;
+  }, [reviews]);
+
+  const emptyStateMarkup = (
+    <EmptyState
+      heading={`You have 0 ${state} reviews`}
+      image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+    >
+      <TextStyle variation="subdued">
+        Try changing the filters for different results
+      </TextStyle>
+    </EmptyState>
+  );
+
+  return (
+    <Tabs tabs={TABS} selected={selectedTabIndex} onSelect={handleSelectedTab}>
+      <ResourceList
+        resourceName={{
+          singular: "review",
+          plural: "reviews",
+        }}
+        items={sortedReviews}
+        loading={loading}
+        renderItem={(item) => (
+          <ResourceList.Item
+            id={item.id}
+            onClick={() => console.log(item)}
+            accessibilityLabel={`Select review entitled: ${item.value.reviewTitle}`}
+          >
+            <ReviewListItem review={item} />
+          </ResourceList.Item>
+        )}
+        emptyState={emptyStateMarkup}
+      />
+    </Tabs>
+  );
+};
