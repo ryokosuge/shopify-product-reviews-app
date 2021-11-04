@@ -19,6 +19,7 @@ import { fetch } from "../lib/app-bridge";
 import { CircleTickOutlineMinor, RiskMinor } from "@shopify/polaris-icons";
 import { Theme } from "../types/rest_api";
 import { StoreThemesMainRespose } from "../types/api";
+import { useRouter } from "next/router";
 
 type GettingStartedStepProps = {
   title: string;
@@ -190,6 +191,7 @@ const CurrentThemeLayout: React.FC<CurrentThemeLayoutProps> = ({
 
 const GettingStartedPage: NextPage = () => {
   const app = useAppBridge();
+  const router = useRouter();
   const fetcher = React.useMemo(() => {
     return async (uri: RequestInfo, options?: RequestInit) => {
       return fetch(app)(uri, options).then((response) => response?.json());
@@ -200,8 +202,18 @@ const GettingStartedPage: NextPage = () => {
     fetcher,
   );
 
+  const handleShowReviewedProductsAction = () => {
+    router.push("/products");
+  };
+
   return (
-    <Page title="Getting Started">
+    <Page
+      title="Getting Started"
+      primaryAction={{
+        content: "Show Reviewed Products",
+        onAction: handleShowReviewedProductsAction,
+      }}
+    >
       <Layout>
         {data == null ? (
           <Layout.Section>
