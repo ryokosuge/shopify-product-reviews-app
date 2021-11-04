@@ -10,7 +10,7 @@ import {
 import React from "react";
 import { ProductReviewMetaField } from "../../hooks/useProductReviews";
 import { ReviewStateType } from "../../types/review";
-import { Rating } from "../Rating/Rating";
+import { Rating } from "../Rating";
 import styles from "./ReviewList.module.css";
 
 const TAB_INDEX = {
