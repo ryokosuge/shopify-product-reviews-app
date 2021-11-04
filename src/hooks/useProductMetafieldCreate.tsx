@@ -20,8 +20,6 @@ export const useProductMetafieldCreate = () => {
           },
         },
       });
-
-      console.log(JSON.stringify(mutationResult, null, 2));
       return mutationResult;
     },
     [mutation],

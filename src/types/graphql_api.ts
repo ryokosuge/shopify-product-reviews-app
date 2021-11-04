@@ -24,16 +24,18 @@ type GraphQLEdgeEndpoints = {
 
 export type ProductWithReviewMetafields = {
   id: string;
-  metafields: {
+  metafields?: {
     edges: {
-      node: {
-        id: string;
-        key: string;
-        value: string;
-        type: keyof MetaFieldType;
-      };
+      node: ProductWithReviewMetafieldEdgeNode;
     }[];
   };
+};
+
+export type ProductWithReviewMetafieldEdgeNode = {
+  id: string;
+  key: string;
+  value: string;
+  type: keyof MetaFieldType;
 };
 
 export type Product = {

@@ -57,7 +57,6 @@ export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
       }),
     },
     onSubmit: async (form) => {
-      console.log(form);
       await onSubmit(form);
       return { status: "success" };
     },

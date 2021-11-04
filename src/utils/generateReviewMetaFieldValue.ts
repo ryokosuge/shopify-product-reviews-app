@@ -1,10 +1,11 @@
 import { nanoid } from "nanoid";
 import { METAFIELD_NAMESPACE } from "../constants/metafield_namespace";
 import { MetaField } from "../types/graphql_api";
-import { ReviewFormType, ReviewState } from "../types/review";
+import { ReviewFormType, ReviewState, ReviewStateType } from "../types/review";
 
 export const generateReviewMetaFieldValue = (
   data: ReviewFormType,
+  state: ReviewStateType,
 ): MetaField<"json"> => {
   const id = nanoid(30);
   return {
@@ -15,7 +16,7 @@ export const generateReviewMetaFieldValue = (
       id,
       ...data,
       created_at: new Date().toISOString(),
-      state: ReviewState.Unpublished,
+      state,
     }),
   };
 };

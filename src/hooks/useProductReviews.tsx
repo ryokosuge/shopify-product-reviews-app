@@ -1,12 +1,14 @@
 import { useQuery } from "@apollo/client";
-import React from "react";
 import { METAFIELD_NAMESPACE } from "../constants/metafield_namespace";
 import { GET_PRODUCT_METAFIELDS_QUERY } from "../graphql/queries/getProductMetafields";
-import { ProductWithReviewMetafields } from "../types/graphql_api";
+import {
+  ProductWithReviewMetafieldEdgeNode,
+  ProductWithReviewMetafields,
+} from "../types/graphql_api";
 import { ReviewMetafield, ReviewState, ReviewStateType } from "../types/review";
 
 export type ProductReviewMetaField = Omit<
-  ProductWithReviewMetafields["metafields"]["edges"][number]["node"],
+  ProductWithReviewMetafieldEdgeNode,
   "value"
 > & {
   value: ReviewMetafield;
@@ -36,9 +38,9 @@ export const useProductReviews = ({
   });
 
   const reviews: ProductReviewMetaField[] =
-    data == null
+    data == null || data.product.metafields == null
       ? []
-      : data.product.metafields.edges.map((metafield) => ({
+      : data.product.metafields?.edges.map((metafield) => ({
           ...metafield.node,
           value: JSON.parse(metafield.node.value) as ReviewMetafield,
         }));

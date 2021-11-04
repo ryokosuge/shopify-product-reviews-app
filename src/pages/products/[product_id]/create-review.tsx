@@ -4,7 +4,7 @@ import router, { useRouter } from "next/router";
 import React from "react";
 import { ReviewForm } from "../../../components/ReviewForm";
 import { useProductMetafieldCreate } from "../../../hooks/useProductMetafieldCreate";
-import { ReviewFormType } from "../../../types/review";
+import { ReviewFormType, ReviewState } from "../../../types/review";
 import { generateReviewMetaFieldValue } from "../../../utils/generateReviewMetaFieldValue";
 import { generateShopifyProductGID } from "../../../utils/generateShopifyProductGID";
 
@@ -16,7 +16,10 @@ const CreateReview: NextPage = () => {
 
   const handleSubmitReviewForm = async (data: ReviewFormType) => {
     const gid = generateShopifyProductGID(productId);
-    const metafield = generateReviewMetaFieldValue(data);
+    const metafield = generateReviewMetaFieldValue(
+      data,
+      ReviewState.Unpublished,
+    );
     await createProductMetafield({ productId: gid, metafield });
     /**
      * After the new review is created, redirect to the product review page

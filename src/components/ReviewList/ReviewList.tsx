@@ -18,7 +18,11 @@ const TAB_INDEX = {
   unpublished: 1,
 } as const;
 
-const TABS = [
+const TABS: {
+  id: ReviewStateType;
+  content: string;
+  accessibilityLabel: string;
+}[] = [
   {
     id: "published",
     content: "Published",
@@ -57,23 +61,40 @@ const ReviewListItem: React.FC<ReviewListItemProps> = ({ review }) => {
   );
 };
 
-type ReviewListProps = {
+export type ReviewBlukAction = {
+  content: string;
+  onAction: (ids: string[]) => Promise<void>;
+};
+
+export type ReviewListProps = {
   state: ReviewStateType;
   reviews: ProductReviewMetaField[];
   loading: boolean;
+  blukActions: ReviewBlukAction[];
+  onChangeTab: (state: ReviewStateType) => void;
 };
 
 export const ReviewList: React.FC<ReviewListProps> = ({
   state,
   reviews,
   loading,
+  blukActions,
+  onChangeTab,
 }) => {
   const [selectedTabIndex, setSelectedTabIndex] = React.useState<number>(
     TAB_INDEX[state],
   );
-  const handleSelectedTab = React.useCallback((selectedTabIndex: number) => {
-    setSelectedTabIndex(selectedTabIndex);
-  }, []);
+
+  const [selectedReviews, setSelectedReviews] = React.useState<string[]>([]);
+
+  const handleSelectedTab = React.useCallback(
+    (selectedTabIndex: number) => {
+      setSelectedReviews([]);
+      setSelectedTabIndex(selectedTabIndex);
+      onChangeTab(TABS[selectedTabIndex].id);
+    },
+    [onChangeTab],
+  );
   const sortedReviews = React.useMemo(() => {
     return reviews;
   }, [reviews]);
@@ -89,6 +110,14 @@ export const ReviewList: React.FC<ReviewListProps> = ({
     </EmptyState>
   );
 
+  const promotedBulkActions = blukActions.map((action) => ({
+    ...action,
+    onAction: async () => {
+      await action.onAction(selectedReviews);
+      setSelectedReviews([]);
+    },
+  }));
+
   return (
     <Tabs tabs={TABS} selected={selectedTabIndex} onSelect={handleSelectedTab}>
       <ResourceList
@@ -97,17 +126,26 @@ export const ReviewList: React.FC<ReviewListProps> = ({
           plural: "reviews",
         }}
         items={sortedReviews}
+        selectedItems={selectedReviews}
+        onSelectionChange={(selectedItems) => {
+          if (selectedItems === "All") {
+            setSelectedReviews(sortedReviews.map((review) => review.id));
+          } else {
+            setSelectedReviews(selectedItems);
+          }
+        }}
         loading={loading}
         renderItem={(item) => (
           <ResourceList.Item
             id={item.id}
-            onClick={() => console.log(item)}
+            onClick={() => setSelectedReviews([...selectedReviews, item.id])}
             accessibilityLabel={`Select review entitled: ${item.value.reviewTitle}`}
           >
             <ReviewListItem review={item} />
           </ResourceList.Item>
         )}
         emptyState={emptyStateMarkup}
+        promotedBulkActions={promotedBulkActions}
       />
     </Tabs>
   );
