@@ -19,3 +19,19 @@ export type Product = {
   title: string;
   handle: string;
 };
+
+export type MetaField<T extends keyof MetaFieldType> = {
+  key: string;
+  namespace: string;
+  type: T;
+  value: MetaFieldType[T];
+};
+
+export type MetaFieldType = {
+  json: string;
+};
+
+export type UserError = {
+  field: string;
+  message: string;
+};

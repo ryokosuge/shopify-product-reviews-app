@@ -69,6 +69,14 @@ const handleRequest = async (context: ExtendableContext) => {
 
     const router = new KoaRouter();
 
+    router.post(
+      "/graphql",
+      verifyRequest({ returnHeader: true, authRoute: "/auth" }),
+      async (context: Koa.Context) => {
+        await Shopify.Utils.graphqlProxy(context.req, context.res);
+      },
+    );
+
     /**
      * This REST endpoint is responsible rfor returning whether the store's current main theme supports app blocks.
      */

@@ -12,15 +12,17 @@ import {
 import {
   lengthMoreThan,
   notEmpty,
-  positiveIntegerString,
   useField,
   useForm,
 } from "@shopify/react-form";
 import React from "react";
+import { ReviewFormType } from "../../types/review";
 
-type Props = {};
+type Props = {
+  onSubmit: (form: ReviewFormType) => Promise<void>;
+};
 
-export const ReviewForm: React.FC<Props> = ({}) => {
+export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
   const { fields, submit, submitErrors, submitting, dirty, reset } = useForm({
     fields: {
       name: useField({
@@ -56,6 +58,7 @@ export const ReviewForm: React.FC<Props> = ({}) => {
     },
     onSubmit: async (form) => {
       console.log(form);
+      await onSubmit(form);
       return { status: "success" };
     },
   });
