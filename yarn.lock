@@ -339,7 +339,22 @@
     react-transition-group "^4.4.2"
     serve "^12.0.0"
 
-"@shopify/react-hooks@2.1.6":
+"@shopify/predicates@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@shopify/predicates/-/predicates-2.0.4.tgz#74dcbac886984f91165d710762f17eb490108b00"
+  integrity sha512-javtI2TATys2nR9uUHTuQ/3bP/bn5BWry1HLvJx7RcLAgNYiDD33JDxiwhj2sXjSnXshuUG+9m8LYxATzfolVg==
+
+"@shopify/react-form@1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@shopify/react-form/-/react-form-1.1.6.tgz#3ab7700705217421d229cced4b4631ad1c88e39c"
+  integrity sha512-3ND/ent14JovfLNkCHD7Xo5xOoCzQXICJb+oeXETO0mcaZfCA4Ba7M/mATjxTY+i19SSQ86gSnUblJJPv22rrQ==
+  dependencies:
+    "@shopify/predicates" "^2.0.4"
+    "@shopify/react-hooks" "^2.1.6"
+    fast-deep-equal "^3.1.3"
+    get-value "^3.0.1"
+
+"@shopify/react-hooks@2.1.6", "@shopify/react-hooks@^2.1.6":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@shopify/react-hooks/-/react-hooks-2.1.6.tgz#0fcaed1536d60321e2bae6fe803c60921ec3f365"
   integrity sha512-sx7WoYB26LmNewQmunpvlqRFtlS78OEuV6KvZNM1ny1TGmyAH6/G/Mf5eoaWNwjjyrKRDofiZLyYWd2hycv6fQ==
@@ -2349,6 +2364,13 @@ get-symbol-description@^1.0.0:
     call-bind "^1.0.2"
     get-intrinsic "^1.1.1"
 
+get-value@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/get-value/-/get-value-3.0.1.tgz#5efd2a157f1d6a516d7524e124ac52d0a39ef5a8"
+  integrity sha512-mKZj9JLQrwMBtj5wxi6MH8Z5eSKaERpAwjg43dPtlGI1ZVEgH/qC7T8/6R2OBSUA+zzHBZgICsVJaEIV2tKTDA==
+  dependencies:
+    isobject "^3.0.1"
+
 glob-parent@^5.1.2, glob-parent@~5.1.0, glob-parent@~5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"
@@ -2872,6 +2894,11 @@ isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
+
+isobject@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
+  integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
 jest-worker@27.0.0-next.5:
   version "27.0.0-next.5"

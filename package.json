@@ -15,6 +15,7 @@
     "@shopify/koa-shopify-auth": "4.1.4",
     "@shopify/polaris": "7.1.0",
     "@shopify/polaris-icons": "4.8.0",
+    "@shopify/react-form": "1.1.6",
     "@shopify/react-hooks": "2.1.6",
     "@shopify/shopify-api": "1.4.3",
     "dotenv": "10.0.0",

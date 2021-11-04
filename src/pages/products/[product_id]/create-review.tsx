@@ -2,6 +2,7 @@ import { Layout, Page } from "@shopify/polaris";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
+import { ReviewForm } from "../../../components/ReviewForm/ReviewForm";
 import { generateShopifyProductGID } from "../../../utils/generateShopifyProductGID";
 
 const CreateReview: NextPage = () => {
@@ -20,9 +21,7 @@ const CreateReview: NextPage = () => {
     >
       <Layout>
         <Layout.Section>
-          <p>
-            Create Reviews Product({product_id}) {gid}
-          </p>
+          <ReviewForm />
         </Layout.Section>
       </Layout>
     </Page>
