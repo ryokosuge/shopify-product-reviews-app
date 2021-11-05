@@ -70,6 +70,7 @@ export type ReviewListProps = {
   state: ReviewStateType;
   reviews: ProductReviewMetaField[];
   loading: boolean;
+  processing: boolean;
   blukActions: ReviewBlukAction[];
   onChangeTab: (state: ReviewStateType) => void;
 };
@@ -78,6 +79,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
   state,
   reviews,
   loading,
+  processing,
   blukActions,
   onChangeTab,
 }) => {
@@ -134,7 +136,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
             setSelectedReviews(selectedItems);
           }
         }}
-        loading={loading}
+        loading={loading || processing}
         renderItem={(item) => (
           <ResourceList.Item
             id={item.id}

@@ -8,6 +8,7 @@ import {
   useProductReviews,
 } from "../../../hooks/useProductReviews";
 import { usePublishReviews } from "../../../hooks/usePublishReviews";
+import { useUnpublishReviews } from "../../../hooks/useUnpublishReviews";
 import { ReviewState, ReviewStateType } from "../../../types/review";
 import { generateShopifyProductGID } from "../../../utils/generateShopifyProductGID";
 
@@ -29,6 +30,7 @@ const ProductDetailPage: NextPage = () => {
   } = useProductReviews({ productId: productGID, state: state });
 
   const { publishAll, loading: publishing } = usePublishReviews();
+  const { unpublishAll, loading: unpublishing } = useUnpublishReviews();
 
   const handleBlukAction = React.useCallback(
     async (ids: string[], blukAction: BlukAction) => {
@@ -47,8 +49,15 @@ const ProductDetailPage: NextPage = () => {
       onAction: (ids: string[]) => handleBlukAction(ids, publishAll),
     };
 
-    return state === ReviewState.Unpublished ? [publishAction] : [];
-  }, [state, handleBlukAction, publishAll]);
+    const unpublishAction = {
+      content: "Unpublish Selected",
+      onAction: (ids: string[]) => handleBlukAction(ids, unpublishAll),
+    };
+
+    return state === ReviewState.Unpublished
+      ? [publishAction]
+      : [unpublishAction];
+  }, [state, handleBlukAction, publishAll, unpublishAll]);
 
   const handleChangeTab = (state: ReviewStateType) => {
     push({
@@ -76,6 +85,7 @@ const ProductDetailPage: NextPage = () => {
               state={state}
               reviews={reviews}
               loading={reviewsLoading}
+              processing={publishing || unpublishing}
               onChangeTab={handleChangeTab}
               blukActions={blukActions}
             />
