@@ -20,7 +20,10 @@ type BlukAction = (value: {
 const ProductDetailPage: NextPage = () => {
   const { query, push } = useRouter();
   const productId = query.product_id as string;
-  const state = query.state as ReviewStateType;
+  const state =
+    query.state == ReviewState.Unpublished
+      ? ReviewState.Unpublished
+      : ReviewState.Published;
   const productGID = generateShopifyProductGID(productId);
 
   const {

@@ -44,6 +44,15 @@ export type Product = {
   handle: string;
 };
 
+export type ProductWithReviewAndMetafield = {
+  id: string;
+  title: string;
+  featuredImage?: {
+    id: string;
+    originalSrc: string;
+  };
+};
+
 export type MetaField<T extends keyof MetaFieldType> = {
   key: string;
   namespace: string;

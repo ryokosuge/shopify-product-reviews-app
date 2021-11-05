@@ -23,6 +23,7 @@ import {
 
 import { useRouteChangeLoader } from "../hooks/useRouteChangeLoader";
 import { fetch } from "../lib/app-bridge";
+import { Link } from "../components/Link/Link";
 
 const ApolloClientProvider: React.FC = ({ children }) => {
   // App Bridge
@@ -74,7 +75,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   };
 
   return (
-    <PolarisAppProvider i18n={translations}>
+    <PolarisAppProvider i18n={translations} linkComponent={Link}>
       <AppBridgeProvider config={config}>
         <RoutePropagationProvider />
         <ApolloClientProvider>
