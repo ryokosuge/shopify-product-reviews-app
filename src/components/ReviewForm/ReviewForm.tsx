@@ -5,9 +5,12 @@ import {
   ContextualSaveBar,
   Form,
   FormLayout,
-  Layout,
+  Frame,
   Select,
+  Stack,
   TextField,
+  TextStyle,
+  Thumbnail,
 } from "@shopify/polaris";
 import {
   lengthMoreThan,
@@ -16,13 +19,16 @@ import {
   useForm,
 } from "@shopify/react-form";
 import React from "react";
+import { ProductWithReviewAndMetafield } from "../../types/graphql_api";
 import { ReviewFormType } from "../../types/review";
+import { ProductInfoSkeleton } from "../ProductInfoSkeleton";
 
 type Props = {
+  product?: ProductWithReviewAndMetafield;
   onSubmit: (form: ReviewFormType) => Promise<void>;
 };
 
-export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
+export const ReviewForm: React.FC<Props> = ({ product, onSubmit }) => {
   const { fields, submit, submitErrors, submitting, dirty, reset } = useForm({
     fields: {
       name: useField({
@@ -63,7 +69,7 @@ export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
   });
 
   return (
-    <Form onSubmit={submit}>
+    <Frame>
       {dirty && (
         <ContextualSaveBar
           message="Unsaved Review..."
@@ -77,9 +83,9 @@ export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
           }}
         />
       )}
-      <Layout>
+      <Card>
         {submitErrors.length > 0 && (
-          <Layout.Section>
+          <Card.Section>
             <Banner status="critical">
               <p>There were some issues with your form submission:</p>
               <ul>
@@ -88,52 +94,60 @@ export const ReviewForm: React.FC<Props> = ({ onSubmit }) => {
                 ))}
               </ul>
             </Banner>
-          </Layout.Section>
+          </Card.Section>
         )}
-        <Layout.Section>
-          <Card>
-            <Card.Section>
-              <FormLayout>
-                <FormLayout.Group>
-                  <TextField
-                    autoComplete="false"
-                    label="Name"
-                    {...fields.name}
-                  />
-                  <TextField
-                    autoComplete="false"
-                    label="Email"
-                    {...fields.email}
-                  />
-                </FormLayout.Group>
-                <FormLayout.Group>
-                  <Select
-                    label="Rating"
-                    options={[...Array(5)].map((_, i) => ({
-                      label: "⭐️".repeat(i + 1),
-                      value: String(i + 1),
-                    }))}
-                    {...fields.rating}
-                  />
-                </FormLayout.Group>
+        <Card.Section>
+          {product == null ? (
+            <ProductInfoSkeleton />
+          ) : (
+            <Stack alignment="center">
+              {product.featuredImage?.originalSrc != null && (
+                <Thumbnail source={product.featuredImage.originalSrc} alt="" />
+              )}
+              <TextStyle variation="strong">
+                {`You are reviewing: "${product.title}"`}
+              </TextStyle>
+            </Stack>
+          )}
+        </Card.Section>
+        <Card.Section>
+          <Form onSubmit={submit}>
+            <FormLayout>
+              <FormLayout.Group>
+                <TextField autoComplete="false" label="Name" {...fields.name} />
                 <TextField
                   autoComplete="false"
-                  label="Review Title"
-                  {...fields.reviewTitle}
+                  label="Email"
+                  {...fields.email}
                 />
-                <TextField
-                  autoComplete="false"
-                  label="Review Body"
-                  {...fields.reviewBody}
+              </FormLayout.Group>
+              <FormLayout.Group>
+                <Select
+                  label="Rating"
+                  options={[...Array(5)].map((_, i) => ({
+                    label: "⭐️".repeat(i + 1),
+                    value: String(i + 1),
+                  }))}
+                  {...fields.rating}
                 />
-                <Button primary submit loading={submitting}>
-                  Create Review
-                </Button>
-              </FormLayout>
-            </Card.Section>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Form>
+              </FormLayout.Group>
+              <TextField
+                autoComplete="false"
+                label="Review Title"
+                {...fields.reviewTitle}
+              />
+              <TextField
+                autoComplete="false"
+                label="Review Body"
+                {...fields.reviewBody}
+              />
+              <Button primary submit loading={submitting}>
+                Create Review
+              </Button>
+            </FormLayout>
+          </Form>
+        </Card.Section>
+      </Card>
+    </Frame>
   );
 };
