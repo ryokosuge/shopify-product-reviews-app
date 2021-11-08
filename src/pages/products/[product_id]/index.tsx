@@ -1,8 +1,19 @@
-import { Card, Layout, Page } from "@shopify/polaris";
+import {
+  Card,
+  Layout,
+  Page,
+  Stack,
+  TextContainer,
+  TextStyle,
+  Thumbnail,
+} from "@shopify/polaris";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
+import { ProductInfoSkeleton } from "../../../components/ProductInfoSkeleton";
+import { Rating } from "../../../components/Rating";
 import { ReviewList } from "../../../components/ReviewList";
+import { useProduct } from "../../../hooks/useProduct";
 import {
   ProductReviewMetaField,
   useProductReviews,
@@ -25,6 +36,7 @@ const ProductDetailPage: NextPage = () => {
       ? ReviewState.Unpublished
       : ReviewState.Published;
   const productGID = generateShopifyProductGID(productId);
+  const { product, loading: productLoading, error } = useProduct(productGID);
 
   const {
     reviews,
@@ -71,6 +83,58 @@ const ProductDetailPage: NextPage = () => {
     });
   };
 
+  const productInfoMarkup = () => {
+    if (productLoading) {
+      return (
+        <Layout.Section>
+          <Card sectioned>
+            <ProductInfoSkeleton />
+          </Card>
+        </Layout.Section>
+      );
+    }
+
+    console.log(product);
+
+    if (error) {
+      return (
+        <Layout.Section>
+          <Card sectioned>
+            <p>{error.message}</p>
+          </Card>
+        </Layout.Section>
+      );
+    }
+
+    const productThumbnailUrl = product?.featuredImage?.originalSrc ?? "";
+    return (
+      <Layout.Section>
+        <Card
+          title={product?.title}
+          sectioned
+          actions={[
+            {
+              content: "Create Review",
+              url: `/products/${productId}/create-review`,
+            },
+          ]}
+        >
+          <Stack alignment="center">
+            <Stack.Item>
+              <Thumbnail source={productThumbnailUrl} alt="" />
+            </Stack.Item>
+            <Stack.Item>
+              <TextContainer>
+                <TextStyle variation="strong">Overall Rating</TextStyle>
+                <Rating rating="3" />
+              </TextContainer>
+            </Stack.Item>
+          </Stack>
+        </Card>
+      </Layout.Section>
+    );
+  };
+
   return (
     <Page
       title="Product Reviews"
@@ -82,6 +146,7 @@ const ProductDetailPage: NextPage = () => {
       ]}
     >
       <Layout>
+        {productInfoMarkup()}
         <Layout.Section>
           <Card sectioned>
             <ReviewList
