@@ -137,6 +137,7 @@ export const ReviewForm: React.FC<Props> = ({ product, onSubmit }) => {
                 {...fields.reviewTitle}
               />
               <TextField
+                multiline
                 autoComplete="false"
                 label="Review Body"
                 {...fields.reviewBody}
