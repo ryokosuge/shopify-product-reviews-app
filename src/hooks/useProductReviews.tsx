@@ -4,7 +4,7 @@ import { GET_PRODUCT_METAFIELDS_QUERY } from "../graphql/queries/getProductMetaf
 import {
   ProductWithReviewMetafieldEdgeNode,
   ProductWithReviewMetafields,
-} from "../types/graphql_api";
+} from "../types/graphql-api";
 import { ReviewMetafield, ReviewState, ReviewStateType } from "../types/review";
 
 export type ProductReviewMetaField = Omit<

@@ -1,11 +1,11 @@
 import { useMutation } from "@apollo/client";
 import React from "react";
 import { PROUDCT_METAFIELD_CREATE } from "../graphql/mutations/productMetafieldCreate";
-import { MetaField, MetaFieldType } from "../types/graphql_api";
+import { MetaField, MetaFieldType } from "../types/graphql-api";
 
 type ProductMetafieldCreateProps<T extends keyof MetaFieldType> = {
   productId: string;
-  metafield: MetaField<T>;
+  metafield: Omit<MetaField<T>, "id">;
 };
 
 export const useProductMetafieldCreate = () => {

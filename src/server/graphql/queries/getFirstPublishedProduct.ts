@@ -1,5 +1,5 @@
 import { GraphqlClient } from "@shopify/shopify-api/dist/clients/graphql";
-import { GraphQLResponseEdges } from "../../types/graphql_api";
+import { GraphQLResponseEdges } from "../../../types/graphql-api";
 
 export const GET_FIRST_PUBLISHED_PRODUCT_QUERY = `
 {

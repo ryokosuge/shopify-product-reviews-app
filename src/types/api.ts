@@ -1,4 +1,4 @@
-import { Theme } from "./rest_api";
+import { Theme } from "./rest-api";
 
 export type StoreThemesMainRespose = {
   theme: Theme;

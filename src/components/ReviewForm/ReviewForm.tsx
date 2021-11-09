@@ -19,7 +19,7 @@ import {
   useForm,
 } from "@shopify/react-form";
 import React from "react";
-import { ProductWithReviewAndMetafield } from "../../types/graphql_api";
+import { ProductWithReviewAndMetafield } from "../../types/graphql-api";
 import { ReviewFormType } from "../../types/review";
 import { ProductInfoSkeleton } from "../ProductInfoSkeleton";
 

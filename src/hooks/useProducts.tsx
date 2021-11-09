@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS_QUERY } from "../graphql/queries/getProducts";
-import { ProductWithReviewAndMetafield } from "../types/graphql_api";
+import { ProductWithReviewAndMetafield } from "../types/graphql-api";
 
 export const useProducts = ({ query = "" }: { query: string }) => {
   const { data, loading } = useQuery<{

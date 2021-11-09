@@ -54,6 +54,7 @@ export type ProductWithReviewAndMetafield = {
 };
 
 export type MetaField<T extends keyof MetaFieldType> = {
+  id: string;
   key: string;
   namespace: string;
   type: T;

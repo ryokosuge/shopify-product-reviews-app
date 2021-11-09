@@ -17,7 +17,7 @@ import { NextPage } from "next";
 import useSWR from "swr";
 import { fetch } from "../lib/app-bridge";
 import { CircleTickOutlineMinor, RiskMinor } from "@shopify/polaris-icons";
-import { Theme } from "../types/rest_api";
+import { Theme } from "../types/rest-api";
 import { StoreThemesMainRespose } from "../types/api";
 import { useRouter } from "next/router";
 

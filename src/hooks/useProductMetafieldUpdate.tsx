@@ -1,5 +1,5 @@
 import React from "react";
-import { MetaField, MetaFieldType } from "../types/graphql_api";
+import { MetaField, MetaFieldType } from "../types/graphql-api";
 import { useMetafieldDelete } from "./useMetafieldDelete";
 import { useProductMetafieldCreate } from "./useProductMetafieldCreate";
 

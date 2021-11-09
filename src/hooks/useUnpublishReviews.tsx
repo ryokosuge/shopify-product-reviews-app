@@ -1,12 +1,14 @@
 import React from "react";
 import { METAFIELD_NAMESPACE } from "../constants/metafield_namespace";
 import { ReviewState } from "../types/review";
+import { useProduceProductMessage } from "./useProduceProductMessage";
 import { useProductMetafieldUpdate } from "./useProductMetafieldUpdate";
 import { ProductReviewMetaField } from "./useProductReviews";
 
 export const useUnpublishReviews = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const updateProductMetafield = useProductMetafieldUpdate();
+  const { produceReviewUnpublishedMessage } = useProduceProductMessage();
 
   const unpublishReview = React.useCallback(
     async ({
@@ -16,6 +18,7 @@ export const useUnpublishReviews = () => {
       productId: string;
       review: ProductReviewMetaField;
     }) => {
+      await produceReviewUnpublishedMessage({ productId, metafield: review });
       await updateProductMetafield({
         productId,
         ogMetafieldId: review.id,
@@ -30,7 +33,7 @@ export const useUnpublishReviews = () => {
         },
       });
     },
-    [updateProductMetafield],
+    [produceReviewUnpublishedMessage, updateProductMetafield],
   );
 
   const unpublishAll = React.useCallback(

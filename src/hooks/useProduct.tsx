@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/client";
 import { GET_PRODUCT_BY_ID } from "../graphql/queries/getProductByID";
-import { ProductWithReviewAndMetafield } from "../types/graphql_api";
+import { ProductWithReviewAndMetafield } from "../types/graphql-api";
 
 export const useProduct = (productID: string) => {
   const { data, loading, error } = useQuery<{
