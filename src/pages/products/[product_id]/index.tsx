@@ -94,8 +94,6 @@ const ProductDetailPage: NextPage = () => {
       );
     }
 
-    console.log(product);
-
     if (error) {
       return (
         <Layout.Section>
@@ -126,7 +124,7 @@ const ProductDetailPage: NextPage = () => {
             <Stack.Item>
               <TextContainer>
                 <TextStyle variation="strong">Overall Rating</TextStyle>
-                <Rating rating="3" />
+                <Rating rating={product?.avgRatingMetafield?.value ?? "0"} />
               </TextContainer>
             </Stack.Item>
           </Stack>

@@ -23,10 +23,10 @@ type ResourceListItem = {
   name: string;
   url: string;
   media: JSX.Element;
-  avgReview: string;
+  avgRating: string;
 };
 
-const renderItem = ({ id, name, url, media, avgReview }: ResourceListItem) => (
+const renderItem = ({ id, name, url, media, avgRating }: ResourceListItem) => (
   <ResourceList.Item
     id={id}
     url={url}
@@ -34,7 +34,7 @@ const renderItem = ({ id, name, url, media, avgReview }: ResourceListItem) => (
     accessibilityLabel={`View details for ${name}`}
   >
     <Heading element="h2">{name}</Heading>
-    <Rating rating={avgReview} />
+    <Rating rating={avgRating} />
   </ResourceList.Item>
 );
 
@@ -54,7 +54,7 @@ const ProductsPage: NextPage = () => {
         alt={product.title}
       />
     ),
-    avgReview: "5",
+    avgRating: product.avgRating,
   }));
 
   const handleSelection = ({ selection = [] }: SelectPayload) => {

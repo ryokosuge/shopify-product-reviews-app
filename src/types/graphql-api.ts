@@ -51,6 +51,24 @@ export type ProductWithReviewAndMetafield = {
     id: string;
     originalSrc: string;
   };
+  avgRatingMetafield?: {
+    id: string;
+    value: string;
+  };
+  publicReviews: {
+    edges: {
+      node: {
+        id: string;
+      };
+    }[];
+  };
+  privateReviews: {
+    edges: {
+      node: {
+        id: string;
+      };
+    }[];
+  };
 };
 
 export type MetaField<T extends keyof MetaFieldType> = {

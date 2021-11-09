@@ -8,12 +8,12 @@ const CREATE_PRODUCT_METAFIELD_AVG_RATING = (
 ) => `
 mutation ProductMetafieldCreate {
   productUpdate(input: {
-    id: ${productID}
+    id: "${productID}"
     metafields: [
       {
         namespace: "${METAFIELD_NAMESPACE.GENERAL}",
         key: "${METAFIELD_KEY.AVG_RATING}",
-        value: ${String(avgRating)},
+        value: "${String(avgRating)}",
         valueType: STRING
       }
     ]
