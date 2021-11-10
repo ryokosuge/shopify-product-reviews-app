@@ -13,6 +13,7 @@ import React from "react";
 import { ProductInfoSkeleton } from "../../../components/ProductInfoSkeleton";
 import { Rating } from "../../../components/Rating";
 import { ReviewList } from "../../../components/ReviewList";
+import { useDeleteReviews } from "../../../hooks/useDeleteReviews";
 import { useProduct } from "../../../hooks/useProduct";
 import {
   ProductReviewMetaField,
@@ -46,6 +47,7 @@ const ProductDetailPage: NextPage = () => {
 
   const { publishAll, loading: publishing } = usePublishReviews();
   const { unpublishAll, loading: unpublishing } = useUnpublishReviews();
+  const { deleteAll, loading: deleting } = useDeleteReviews();
 
   const handleBlukAction = React.useCallback(
     async (ids: string[], blukAction: BlukAction) => {
@@ -69,10 +71,14 @@ const ProductDetailPage: NextPage = () => {
       onAction: (ids: string[]) => handleBlukAction(ids, unpublishAll),
     };
 
-    return state === ReviewState.Unpublished
-      ? [publishAction]
-      : [unpublishAction];
-  }, [state, handleBlukAction, publishAll, unpublishAll]);
+    return [
+      state === ReviewState.Unpublished ? publishAction : unpublishAction,
+      {
+        content: "Delete Selected",
+        onAction: (ids: string[]) => handleBlukAction(ids, deleteAll),
+      },
+    ];
+  }, [state, handleBlukAction, publishAll, unpublishAll, deleteAll]);
 
   const handleChangeTab = (state: ReviewStateType) => {
     push({
@@ -151,7 +157,7 @@ const ProductDetailPage: NextPage = () => {
               state={state}
               reviews={reviews}
               loading={reviewsLoading}
-              processing={publishing || unpublishing}
+              processing={publishing || unpublishing || deleting}
               onChangeTab={handleChangeTab}
               blukActions={blukActions}
             />

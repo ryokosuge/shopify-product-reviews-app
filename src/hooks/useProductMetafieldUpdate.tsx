@@ -6,7 +6,7 @@ import { useProductMetafieldCreate } from "./useProductMetafieldCreate";
 type ProductMetafieldUpdateProps<T extends keyof MetaFieldType> = {
   productId: string;
   ogMetafieldId: string;
-  metafield: MetaField<T>;
+  metafield: Omit<MetaField<T>, "id">;
 };
 
 export const useProductMetafieldUpdate = () => {
