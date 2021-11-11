@@ -14,8 +14,7 @@
     <div class="prapp-review">
       <ul class="prapp-review__list">
         {% for key_value in reviews %}
-          {% assign key = key_value | first %}
-          {% assign review = reviews[key].value %}
+          {% assign review = key_value.last.value %}
           <li class="prapp-review__list-item">
             {% assign rating = review.rating | plus: 0 %}
             {% render "star-rating", rating: rating, fill: block.settings.stars_fill_color, size: block.settings.star_size %}
