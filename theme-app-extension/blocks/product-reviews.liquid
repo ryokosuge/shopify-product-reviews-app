@@ -1,0 +1,84 @@
+{{ 'style.css' | asset_url | stylesheet_tag }}
+{{ 'star-rating.css' | asset_url | stylesheet_tag }}
+
+{% assign avg_rating = block.settings.product.metafields.prapp.avg_rating | plus: 0 %}
+{% assign reviews = block.settings.product.metafields.prapp-public-reviews %}
+
+<div class="prapp-block" style="padding: {{ block.settings.padding_y }}px {{ block.settings.padding_x }}px;" data-product-id="{{ block.settings.product.id }}" >
+  <div class="praap-summary">
+    <div class="prapp-summary__header">
+      <h2 class="prapp-summary__headline">{{ block.settings.heading }}</h2>
+    </div>
+  </div>
+  {% if reviews != blank %}
+    <div class="prapp-review">
+      <ul class="prapp-review__list">
+        {% for key_value in reviews %}
+          {% assign key = key_value | first %}
+          {% assign review = reviews[key].value %}
+          <li class="prapp-review__list-item">
+            {% assign rating = review.rating | plus: 0 %}
+            {% render "star-rating", rating: rating, fill: block.settings.stars_fill_color, size: block.settings.star_size %}
+            <h3 class="prapp-review__list-item-meta-headline" >{{ review.reviewTitle }}</h3>
+            <div>
+              <p>{{ review.reviewBody }}</p>
+            </div>
+            <div class="prapp-review__list-item-meta">
+              <p>
+                <b>{{ review.name }}</b>
+                on
+                <b>{{ review.created_at | date: "%b %d, %Y" }}</b>
+              </p>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Product Reviews",
+  "templates": ["product"],
+  "target": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "stars_fill_color",
+      "label": "Stars Color",
+      "default": "#000000"
+    },
+    {
+      "type": "number",
+      "id": "star_size",
+      "label": "Star Size",
+      "default": 24
+    },
+    {
+      "type": "number",
+      "id": "padding_x",
+      "label": "Horizontal Spacing",
+      "default": 50
+    },
+    {
+      "type": "number",
+      "id": "padding_y",
+      "label": "Vertical Spacing",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "カスタマーレビュー"
+    },
+    {
+      "id": "product",
+      "type": "product",
+      "label": "Product",
+      "autofill": true
+    }
+  ]
+}
+{% endschema %}
