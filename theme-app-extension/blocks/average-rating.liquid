@@ -1,0 +1,83 @@
+{{ 'star-rating.css' | asset_url | stylesheet_tag }}
+{% assign avg_rating = block.settings.product.metafields.prapp.avg_rating | plus: 0 %}
+
+{% if avg_rating > 0 %}
+  <div class="prapp-average-block" style="padding: {{ block.settings.padding_y }}px {{ block.settings.padding_x }}px;" data-product-id="{{ block.settings.product.id }}">
+    {% if block.settings.show_header and block.settings.heading != blank %}
+      <h4>{{ block.settings.heading }}</h4>
+    {% endif %}
+    {% render "star-rating", rating: avg_rating, justify_content: block.settings.stars_justify_content, fill_color: block.settings.stars_fill_color, size: block.settings.star_size %}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Average Review Score",
+  "templates": ["product"],
+  "target": "section",
+  "settings": [
+    {
+      "id": "stars_fill_color",
+      "type": "color",
+      "label": "Star Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "stars_justify_content",
+      "label": "Stars Justify Content",
+      "options": [
+        {
+          "value": "center",
+          "label": "center"
+        },
+        {
+          "value": "flex-start",
+          "label": "flex-start"
+        },
+        {
+          "value": "flex-end",
+          "label": "flex-end"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "id": "star_size",
+      "type": "number",
+      "label": "Star Size",
+      "default": 24
+    },
+    {
+      "id": "padding_x",
+      "type": "number",
+      "label": "Horizontal Spacing",
+      "default": 0
+    },
+    {
+      "id": "padding_y",
+      "type": "number",
+      "label": "Vertical Spacing",
+      "default": 0
+    },
+    {
+      "id": "show_header",
+      "type": "checkbox",
+      "label": "Show Heading",
+      "default": false
+    },
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "Average Score"
+    },
+    {
+      "id": "product",
+      "type": "product",
+      "label": "Product",
+      "autofill": true
+    }
+  ]
+}
+{% endschema %}

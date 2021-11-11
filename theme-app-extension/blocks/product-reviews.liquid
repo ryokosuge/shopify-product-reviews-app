@@ -1,7 +1,6 @@
 {{ 'style.css' | asset_url | stylesheet_tag }}
 {{ 'star-rating.css' | asset_url | stylesheet_tag }}
 
-{% assign avg_rating = block.settings.product.metafields.prapp.avg_rating | plus: 0 %}
 {% assign reviews = block.settings.product.metafields.prapp-public-reviews %}
 
 <div class="prapp-block" style="padding: {{ block.settings.padding_y }}px {{ block.settings.padding_x }}px;" data-product-id="{{ block.settings.product.id }}" >
@@ -17,7 +16,7 @@
           {% assign review = key_value.last.value %}
           <li class="prapp-review__list-item">
             {% assign rating = review.rating | plus: 0 %}
-            {% render "star-rating", rating: rating, fill: block.settings.stars_fill_color, size: block.settings.star_size %}
+            {% render "star-rating", rating: rating, justify_content: block.settings.stars_justify_content, fill_color: block.settings.stars_fill_color, size: block.settings.star_size %}
             <h3 class="prapp-review__list-item-meta-headline" >{{ review.reviewTitle }}</h3>
             <div>
               <p>{{ review.reviewBody }}</p>
@@ -47,6 +46,26 @@
       "id": "stars_fill_color",
       "label": "Stars Color",
       "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "stars_justify_content",
+      "label": "Stars Justify Content",
+      "options": [
+        {
+          "value": "center",
+          "label": "center"
+        },
+        {
+          "value": "flex-start",
+          "label": "flex-start"
+        },
+        {
+          "value": "flex-end",
+          "label": "flex-end"
+        }
+      ],
+      "default": "center"
     },
     {
       "type": "number",
