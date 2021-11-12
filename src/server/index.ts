@@ -2,14 +2,18 @@ import next from "next";
 import dotenv from "dotenv";
 import Koa, { ExtendableContext } from "koa";
 import KoaRouter from "koa-router";
+import KoaBody from "koa-bodyparser";
 import createShopifyAuth, { verifyRequest } from "@shopify/koa-shopify-auth";
-import Shopify, { ApiVersion, DeliveryMethod } from "@shopify/shopify-api";
+import Shopify, { ApiVersion } from "@shopify/shopify-api";
 import { RESTAPIResponse } from "../types/rest-api";
 import { APP_BLOCK_TEMPLATES } from "./consts";
 import { getFirstPublishedProduct } from "./graphql/queries/getFirstPublishedProduct";
 import { containsAppBlock } from "../lib/contains-app-blocks";
 import { enqueueProductUpdateOperation } from "./jobs/product-update";
 import { AuthScopes } from "@shopify/shopify-api/dist/auth/scopes";
+import { addReview } from "./jobs/add-review";
+import { InMemorySessionStorag } from "./session/InMemoerySessionStorage";
+import { verifyAppProxyExtensionSignatureMiddleware } from "./middlewares/verifyAppProxyExtensionSignatureMiddleware";
 
 dotenv.config();
 
@@ -32,7 +36,7 @@ Shopify.Context.initialize({
   API_VERSION: ApiVersion.October21,
   IS_EMBEDDED_APP: true,
   IS_PRIVATE_APP: false,
-  SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
+  SESSION_STORAGE: new InMemorySessionStorag(),
 });
 
 const ACTIVE_SHOPIFY_SHOPS: { [key: string]: string } = {};
@@ -137,6 +141,33 @@ const handleRequest = async (context: ExtendableContext) => {
       }
     });
 
+    router.post(
+      "/api/reviews",
+      verifyAppProxyExtensionSignatureMiddleware,
+      KoaBody(),
+      async (context) => {
+        const shop = context.query.shop as string;
+        const session = await Shopify.Utils.loadOfflineSession(shop);
+        if (session == null) {
+          context.res.statusCode = 401;
+          return;
+        }
+
+        const grahpqlClient = new Shopify.Clients.Graphql(
+          session.shop,
+          session.accessToken,
+        );
+
+        try {
+          await addReview(grahpqlClient, context.request.body);
+          context.res.statusCode = 200;
+        } catch (error: any) {
+          console.error(error);
+          context.res.statusCode = 500;
+        }
+      },
+    );
+
     /**
      * This REST endpoint is responsible rfor returning whether the store's current main theme supports app blocks.
      */
@@ -153,8 +184,6 @@ const handleRequest = async (context: ExtendableContext) => {
           context.res.statusCode = 401;
           return;
         }
-
-        console.info(JSON.stringify(session, null, 2));
 
         const restClient = new Shopify.Clients.Rest(
           session.shop,

@@ -21,6 +21,7 @@
     "@shopify/react-hooks": "2.1.6",
     "@shopify/shopify-api": "1.4.3",
     "async": "3.2.2",
+    "crypto": "1.0.1",
     "dotenv": "10.0.0",
     "graphql": "16.0.1",
     "koa": "2.13.4",

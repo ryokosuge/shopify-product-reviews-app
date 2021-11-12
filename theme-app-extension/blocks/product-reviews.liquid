@@ -2,11 +2,19 @@
 {{ 'star-rating.css' | asset_url | stylesheet_tag }}
 
 {% assign reviews = block.settings.product.metafields.prapp-public-reviews %}
+{% assign avg_rating = block.settins.product.metafields.prapp.avg_rating | plus: 0 %}
 
 <div class="prapp-block" style="padding: {{ block.settings.padding_y }}px {{ block.settings.padding_x }}px;" data-product-id="{{ block.settings.product.id }}" >
-  <div class="praap-summary">
+  <div class="prapp-summary">
     <div class="prapp-summary__header">
       <h2 class="prapp-summary__headline">{{ block.settings.heading }}</h2>
+      {% if block.settings.allow_unverified_reviews %}
+        {% if avg_rating > 0 %}
+          <button type="button" class="prapp-summary__write-review">{{ block.settings.existing_reviews_action_text }}</button>
+        {% else %}
+          <button type="button" class="prapp-summary__write-review">{{ block.settings.no_reviews_action_text }}</button>
+        {% endif %}
+      {% endif %}
     </div>
   </div>
   {% if reviews != blank %}
@@ -34,6 +42,8 @@
     </div>
   {% endif %}
 </div>
+
+<script src="{{ 'product-reviews-form.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
@@ -90,6 +100,24 @@
       "id": "heading",
       "label": "Heading",
       "default": "カスタマーレビュー"
+    },
+    {
+      "type": "text",
+      "id": "no_reviews_action_text",
+      "label": "Call to action text when there are no reviews",
+      "default": "Be the first to review this product."
+    },
+    {
+      "type": "text",
+      "id": "existing_reviews_action_text",
+      "label": "Call to action text when the product has reviews",
+      "default": "Write Review"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_unverified_reviews",
+      "label": "Allow unverified review submissions",
+      "default": false
     },
     {
       "id": "product",
